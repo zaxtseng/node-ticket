@@ -15,12 +15,12 @@ const obj = {
         onStationName: '万科城',  //预定的站点名称
         offStationName: "软件产业基地",//预定到站名称
         tradePrice: 0,//总金额
-        saleDates: '20',//车票日期
+        saleDates: '25',//车票日期
         beginDate: '',//订票时间，滞空，用于抓取到余票后填入数据
     },
-    phoneNumber: 123511111,
+    phoneNumber: 1351,
     cookie: 'JSESSIONID=AF7FCD8DFCD7FFC2347B31D91F13BC70',
-    day: "20" //定17号的票，这个主要是用于抢指定日期的票，滞空则为抢当月所有余票
+    day: "25" //定17号的票，这个主要是用于抢指定日期的票，滞空则为抢当月所有余票
 
 }
 
@@ -77,7 +77,7 @@ class QueryTicket {
         // 如果没有余票，打印出请求多少次,然后返回，不执行下面的代码
         if(!list.length){
             console.log(`用户${this.phoneNumber}:无,已进行${this.times}次`)
-            return
+            return ticketList
         }
 
         //如果有余票
@@ -86,7 +86,7 @@ class QueryTicket {
             let str = $(item).html()
             //最后一个span 的内容其实"余0"，也就是无票，只不过是被转码了而已
             //因此要在下一步对其进行格式化
-            let arr = str.split(/<span>|<\/span>|\&\$x4F59\;/).filter(irem => !!item === true)
+            let arr = str.split(/<span>|<\/span>|\&\#x4F59\;/).filter(item  => !!item === true)
             let data = {
                 day: arr[0],
                 ticketLeft: arr[1]
@@ -123,7 +123,7 @@ class QueryTicket {
     //购票相关逻辑
     async handleBuyTicket(ticketList){
         let year = new Date().getFullYear()
-        let month = new Date().getMonth + 1
+        let month = new Date().getMonth() + 1
         let {
             onStationName,//起始站点名
             offStationName,//结束站点名
@@ -186,7 +186,7 @@ class QueryTicket {
             }
         }} = parseData
         //如果购票成功，则返回500
-        if(retrunCode === "500"){
+        if(returnCode === "500"){
             let res = await this.sendMsg({
                 dateStr, //日期
                 tickAmount: tickAmount.slice(0, -1), //总张数
